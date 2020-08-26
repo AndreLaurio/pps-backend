@@ -19,5 +19,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('/accounts', 'AccountApprovalController@index');
-Route::put('/accounts/id', 'AccountApprovalController@update');
+Route::put('/accounts/{id}', 'AccountApprovalController@update');
 

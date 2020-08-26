@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\AccountApproval;
+use App\User;
 
 class AccountApprovalController extends Controller
 {
@@ -12,9 +13,10 @@ class AccountApprovalController extends Controller
         return response()->json($accounts);
     }
 
-    public function update(Request $request, $id ){
+    public function update(Request $request, $id){
         $approvedAccount = User::find($id);
-        $approvedAccount->is_approved = $request->input('approved');
+        $approvedAccount->is_approved = $request->input('is_approved');
+        $approvedAccount->approved_by = $request->input('approved_by');
         $approvedAccount->save();
     }
 }
