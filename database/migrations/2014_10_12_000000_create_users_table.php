@@ -26,6 +26,7 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->string('user_type');
             $table->string('is_approved')->nullable();
+            $table->string('approved_by')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
