@@ -13,8 +13,8 @@ class AccountApprovalController extends Controller
         return response()->json($accounts);
     }
 
-    public function update(Request $request, $id){
-        $approvedAccount = User::find($id);
+    public function update(Request $request, $user_id){
+        $approvedAccount = User::find($user_id);
         $approvedAccount->is_approved = $request->input('is_approved');
         $approvedAccount->approved_by = $request->input('approved_by');
         $approvedAccount->save();
