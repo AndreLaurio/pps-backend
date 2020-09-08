@@ -21,3 +21,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('/accounts', 'AccountApprovalController@index');
 Route::put('/accounts/{user_id}', 'AccountApprovalController@update');
 
+Route::get('/exam/fresh', 'ExamController@getFresh');
+Route::post('/exam/create', 'ExamController@create');
