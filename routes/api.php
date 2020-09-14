@@ -23,3 +23,10 @@ Route::put('/accounts/{user_id}', 'AccountApprovalController@update');
 
 Route::get('/exam/fresh', 'ExamController@getFresh');
 Route::post('/exam/create', 'ExamController@create');
+Route::get('/exams', 'ExamController@getAll');
+Route::get('/exam/{exam_id}', 'ExamController@get');
+Route::get('/exam/desc/{exam_id}', 'ExamController@getDesc');
+Route::get('/exam/items/{exam_id}', 'ExamController@getItems');
+
+Route::post('/exam/take/intro', 'TakeExamController@saveIntroSession');
+Route::post('/exam/take/session/get', 'TakeExamController@getSession');
