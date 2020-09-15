@@ -23,3 +23,5 @@ Route::put('/accounts/{user_id}', 'AccountApprovalController@update');
 
 Route::get('/exam/fresh', 'ExamController@getFresh');
 Route::post('/exam/create', 'ExamController@create');
+
+Route::put('/changepw/{user_id}', 'AccountController@changePassword');
