@@ -9,6 +9,7 @@ use App\ExamChoice;
 use App\ExamGroup;
 use App\QuestionType;
 use Illuminate\Support\Facades\Log;
+use DB;
 
 class ExamController extends Controller
 {
@@ -135,4 +136,92 @@ class ExamController extends Controller
             $group->save();
         }
     }
+
+    public function getAll() {
+        return Exam::getAll();
+    }
+
+    public function get($exam_id) {
+        
+        $exam = DB::table('exams')
+                    ->where('exam_id', $exam_id)
+                    ->first();
+        
+
+        $exam->exam_items = DB::table('exam_items')
+                                ->where('exam_id', $exam->exam_id)
+                                ->get();
+        
+        foreach($exam->exam_items as $exam_item) {
+
+            // $exam_item = (object) $exam_item;
+
+            if (in_array($exam_item->question_type_code, ['SCQ', 'MCQ'])) {
+
+                $exam_item->choices = DB::table('exam_choices')
+                                            ->where([
+                                                ['exam_id', '=', $exam->exam_id],
+                                                ['item_no', '=', $exam_item->item_no],
+                                            ])
+                                            ->get();
+            }
+        }
+
+        $exam->exam_groups = DB::table('exam_groups')
+                                    ->where('exam_id', $exam->exam_id)
+                                    ->get();
+
+        $exam = (array) $exam;
+        Log::error($exam);
+        return $exam;
+    }
+
+    public function getDesc($exam_id) {
+
+        $exam = DB::table('exams')
+            ->where('exam_id', $exam_id)
+            ->first(); 
+
+        
+        $exam = (array) $exam;
+        Log::error('getDesc()');
+        Log::error(json_encode($exam));
+        return $exam;
+    }
+
+    public function getItems($exam_id) {
+        
+        $exam = (object) [];
+        $exam->exam_id = $exam_id;
+
+        $exam->exam_items = DB::table('exam_items')
+                                ->where('exam_id', $exam->exam_id)
+                                ->get();
+        
+        foreach($exam->exam_items as $exam_item) {
+
+            // $exam_item = (object) $exam_item;
+
+            if (in_array($exam_item->question_type_code, ['SCQ', 'MCQ'])) {
+
+                $exam_item->choices = DB::table('exam_choices')
+                                            ->where([
+                                                ['exam_id', '=', $exam->exam_id],
+                                                ['item_no', '=', $exam_item->item_no],
+                                            ])
+                                            ->get();
+            }
+        }
+
+        $exam->exam_groups = DB::table('exam_groups')
+                                    ->where('exam_id', $exam->exam_id)
+                                    ->get();
+
+        $exam = (array) $exam;
+        
+        return $exam;
+    }
+
+    
+
 }
