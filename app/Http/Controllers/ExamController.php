@@ -172,7 +172,6 @@ class ExamController extends Controller
                                     ->get();
 
         $exam = (array) $exam;
-        Log::error($exam);
         return $exam;
     }
 
@@ -182,10 +181,7 @@ class ExamController extends Controller
             ->where('exam_id', $exam_id)
             ->first(); 
 
-        
         $exam = (array) $exam;
-        Log::error('getDesc()');
-        Log::error(json_encode($exam));
         return $exam;
     }
 

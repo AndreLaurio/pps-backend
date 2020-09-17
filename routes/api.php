@@ -30,3 +30,5 @@ Route::get('/exam/items/{exam_id}', 'ExamController@getItems');
 
 Route::post('/exam/take/intro', 'TakeExamController@saveIntroSession');
 Route::post('/exam/take/session/get', 'TakeExamController@getSession');
+Route::post('/exam/take/session/set', 'TakeExamController@setSession');
+Route::post('/exam/check', 'TakeExamController@checkAnswer');
