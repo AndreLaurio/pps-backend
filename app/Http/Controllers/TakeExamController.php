@@ -21,6 +21,7 @@ class TakeExamController extends Controller
                         ->where([
                             ['user_id', '=', $user_id],
                             ['exam_id', '=', $exam_id],
+                            ['exam_status_code', '=', 'F']
                         ])
                         ->select(DB::raw('COUNT(*) as num'))
                         ->first();
@@ -75,9 +76,6 @@ class TakeExamController extends Controller
                 'message' => 'Your exam session is successfully saved else.'
             ];
         }
-
-        
-
         return $response;
     }
 
@@ -115,17 +113,19 @@ class TakeExamController extends Controller
                 ]);
         }
         else {
-
+            
             DB::table('examinee_exams')
-                ->insert([
-                    'user_id' => $request->input('user_id'),
-                    'examinee_no' => $request->input('user_id'),
-                    'exam_id' => $exam->exam_id,
+                ->where([
+                    ['user_id', '=', $user_id],
+                    ['exam_id', '=', $exam->exam_id],
+                ])
+                ->update([
+                    'exam_status_code' => 'O',
                     'time_start' => $now,
                     'passing_score' => $exam->passing_score,
                     'total_score' => $exam->total_score,
                     'exam_string' => json_encode($exam)
-                ]);        
+                ]);
             
 
             DB::table('users')
@@ -242,6 +242,7 @@ class TakeExamController extends Controller
                 ['exam_id', '=', $exam->exam_id],
             ])
             ->update([
+                'exam_status_code' => 'F',
                 'exam_remarks_code' => $exam_remarks_code,
                 'overall_score' => $score,
                 'time_end' => $now,

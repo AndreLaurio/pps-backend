@@ -218,6 +218,4 @@ class ExamController extends Controller
         return $exam;
     }
 
-    
-
 }

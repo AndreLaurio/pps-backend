@@ -36,3 +36,12 @@ Route::post('/exam/take/intro', 'TakeExamController@saveIntroSession');
 Route::post('/exam/take/session/get', 'TakeExamController@getSession');
 Route::post('/exam/take/session/set', 'TakeExamController@setSession');
 Route::post('/exam/check', 'TakeExamController@checkAnswer');
+
+Route::post('/examinee/exams', 'ExamineeController@getExams');
+Route::post('/examinee/exam/result', 'ExamExamineeController@getResult');
+Route::get('/exam/examinees/{exam_id}', 'ExamExamineeController@get');
+Route::get('/exam/examinees/not/{exam_id}', 'ExamExamineeController@getExamineesNotInExam');
+Route::post('/exam/examinee/delete', 'ExamExamineeController@delete');
+Route::post('/exam/examinee/add', 'ExamExamineeController@add');
+
+Route::post('/exam/results', 'ExamExamineeController@getResults');
