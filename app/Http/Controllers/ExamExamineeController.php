@@ -151,6 +151,30 @@ class ExamExamineeController extends Controller
         ];
 
         return $response;
+    }
 
+    public function getExamineeAnswer(Request $request) {
+
+        $data = DB::table('examinee_exams')
+                    ->where([
+                        ['user_id', '=', $request->input('user_id')],
+                        ['exam_id', '=', $request->input('exam_id')]
+                    ])
+                    ->first();
+
+        $result = [
+            'examinee_no' => $data->examinee_no,
+            'overall_score' => $data->overall_score,
+            'total_score' => $data->total_score
+        ];
+
+        $exam = json_decode($data->exam_string);
+
+        $response = [
+            'result' => $result,
+            'exam' => $exam
+        ];
+
+        return $response;
     }
 }

@@ -51,3 +51,4 @@ Route::post('/exam/delete', 'ExamController@delete');
 
 Route::post('/exam/edit/get', 'ExamController@getForEdit');
 Route::post('/exam/edit', 'ExamController@edit');
+Route::post('/exam/examinee/answer/view', 'ExamExamineeController@getExamineeAnswer');
