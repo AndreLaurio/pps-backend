@@ -127,4 +127,30 @@ class ExamExamineeController extends Controller
         
         return $result;
     }
+
+    public function getExamineesCount(Request $request) {
+
+        $examinee_count = DB::table('examinee_exams')
+                            ->where('exam_id', $request->input('exam_id'))
+                            ->select(DB::raw('COUNT(*) AS num'))
+                            ->first();
+        
+        if ($examinee_count->num == 0) {
+            $message = "There is no examinee taking the exam.";
+        }
+        else if ($examinee_count->num == 1) {
+            $message = "There is 1 examinee taking/taken the exam.";
+        }
+        else {
+            $message = "There are " . $examinee_count->num . " taking/taken the exam.";
+        } 
+
+        $response = [
+            'status' => 'success',
+            'message' => $message
+        ];
+
+        return $response;
+
+    }
 }

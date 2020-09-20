@@ -75,8 +75,14 @@ class ExamController extends Controller
         $exam->version = $request->input('version');
 
         $exam->save();
+        $exam->exam_id = $exam->id;
 
-        $exam_items = $request->input('exam_items');
+        $exam_controller = new ExamController();
+        $exam_controller->addExamItems($exam->exam_id, $request->input('exam_items'));
+        $exam_controller->addExamGroups($exam->exam_id, $request->input('exam_groups'));
+    }
+
+    public function addExamItems($exam_id, $exam_items) {
 
         foreach($exam_items as $item_no => $exam_item) {
 
@@ -84,7 +90,7 @@ class ExamController extends Controller
 
             $item = new ExamItem();
 
-            $item->exam_id = $exam->id;
+            $item->exam_id = $exam_id;
             $item->item_no = $item_no;
             $item->group_no = $exam_item->group_no;
             $item->group_item_no = $item_no;
@@ -108,7 +114,7 @@ class ExamController extends Controller
 
                     $exam_choice = new ExamChoice();
 
-                    $exam_choice->exam_id = $exam->id;
+                    $exam_choice->exam_id = $exam_id;
                     $exam_choice->item_no = $item->item_no;
                     $exam_choice->choice_no = $choice_no;
                     $exam_choice->label = $choice->label;
@@ -118,10 +124,9 @@ class ExamController extends Controller
                 }
             }
         }
+    }
 
-
-        // Adding Exam Group
-        $exam_groups = $request->input('exam_groups');
+    public function addExamGroups($exam_id, $exam_groups) {
 
         foreach($exam_groups as $exam_group) {
 
@@ -129,7 +134,7 @@ class ExamController extends Controller
 
             $group = new ExamGroup();
 
-            $group->exam_id = $exam->id;
+            $group->exam_id = $exam_id;
             $group->group_no = $exam_group->group_no;
             $group->group_list_type_code = $exam_group->group_list_type_code;
 
@@ -147,9 +152,8 @@ class ExamController extends Controller
                     ->where('exam_id', $exam_id)
                     ->first();
         
-
         $exam->exam_items = DB::table('exam_items')
-                                ->where('exam_id', $exam->exam_id)
+                                ->where('exam_id', $exam_id)
                                 ->get();
         
         foreach($exam->exam_items as $exam_item) {
@@ -218,4 +222,77 @@ class ExamController extends Controller
         return $exam;
     }
 
+    public function delete(Request $request) {
+
+        $exam_id = $request->input('exam_id');
+        
+        DB::table('examinee_exams')
+            ->where('exam_id', $exam_id)
+            ->delete();
+
+        DB::table('exam_groups')
+            ->where('exam_id', $exam_id)
+            ->delete();
+
+        DB::table('exam_choices')
+            ->where('exam_id', $exam_id)
+            ->delete();
+        
+        DB::table('exam_items')
+            ->where('exam_id', $exam_id)
+            ->delete();
+
+        DB::table('exams')  
+            ->where('exam_id', $exam_id)
+            ->delete();
+    }
+
+    public function getForEdit(Request $request) {
+
+        $exam_id = $request->input('exam_id');
+        
+        $exam_controller = new ExamController();
+
+        $exam = $exam_controller->get($exam_id);
+        $response = $exam_controller->getFresh();
+        $response['exam'] = $exam;
+
+        return $response;
+    }
+
+    public function edit(Request $request) {
+
+        $exam_id = $request->input('exam_id');
+
+        DB::table('exams')
+            ->where('exam_id', $exam_id)
+            ->update([
+                'exam_title' => $request->input('exam_title'),
+                'exam_desc' => $request->input('exam_desc'),
+                'time_duration' => $request->input('time_duration'),
+                'passing_score' => $request->input('passing_score'),
+                'total_score' => count($request->input('exam_items')),
+                'total_num_questions' => count($request->input('exam_items')),
+                'is_randomized' => $request->input('is_randomized'),
+                'is_active' => $request->input('is_active'),
+                'version' => $request->input('version')
+            ]);
+            
+        // delete the prev items and groups
+        DB::table('exam_groups')
+            ->where('exam_id', $exam_id)
+            ->delete();
+
+        DB::table('exam_choices')
+            ->where('exam_id', $exam_id)
+            ->delete();
+        
+        DB::table('exam_items')
+            ->where('exam_id', $exam_id)
+            ->delete();
+        
+        $exam_controller = new ExamController();
+        $exam_controller->addExamItems($exam_id, $request->input('exam_items'));
+        $exam_controller->addExamGroups($exam_id, $request->input('exam_groups'));
+    }
 }

@@ -45,3 +45,9 @@ Route::post('/exam/examinee/delete', 'ExamExamineeController@delete');
 Route::post('/exam/examinee/add', 'ExamExamineeController@add');
 
 Route::post('/exam/results', 'ExamExamineeController@getResults');
+
+Route::post('/exam/examinees/count', 'ExamExamineeController@getExamineesCount');
+Route::post('/exam/delete', 'ExamController@delete');
+
+Route::post('/exam/edit/get', 'ExamController@getForEdit');
+Route::post('/exam/edit', 'ExamController@edit');
