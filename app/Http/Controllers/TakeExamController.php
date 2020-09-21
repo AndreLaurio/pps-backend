@@ -98,6 +98,7 @@ class TakeExamController extends Controller
         $user_id = $request->input('user_id');
         $exam = (object) $request->input('exam');
         $now = now(new DateTimeZone('Asia/Manila'));
+        $reponse = [];
 
         $session = DB::table('users')
                         ->where('user_id', $user_id)
@@ -111,8 +112,20 @@ class TakeExamController extends Controller
                 ->update([
                     'session_no_takes' => $session->session_no_takes + 1
                 ]);
+            
+            $status = DB::table('examinee_exams')
+                    ->where([
+                        ['user_id', '=', $user_id],
+                        ['exam_id', '=', $exam->exam_id],
+                    ])
+                    ->select('exam_status_code', 'exam_string')
+                    ->first();
+
+            $response['exam'] = json_decode($status->exam_string);
+            $response['exam_status_code'] = 'O';
         }
         else {
+
             
             DB::table('examinee_exams')
                 ->where([
@@ -124,9 +137,12 @@ class TakeExamController extends Controller
                     'time_start' => $now,
                     'passing_score' => $exam->passing_score,
                     'total_score' => $exam->total_score,
-                    'exam_string' => json_encode($exam)
+                    'exam_string' => json_encode($exam),
+                    'default_exam_string' => json_encode($exam),
+                    'time_duration' => $exam->time_duration
                 ]);
-            
+
+            $response['exam_status_code'] = 'N';
 
             DB::table('users')
                 ->where('user_id', $request->input('user_id'))
@@ -143,6 +159,22 @@ class TakeExamController extends Controller
                 'take_no' => $session->session_no_takes + 1,
                 'taken_on' => $now
             ]);
+
+        $timer = DB::table('examinee_exams')
+                    ->where([
+                        ['user_id', '=', $user_id],
+                        ['exam_id', '=', $exam->exam_id],
+                    ])
+                    ->select(
+                        'time_start',
+                        'time_duration'
+                    )
+                    ->first();
+        
+        $response['time_start'] = $timer->time_start;
+        $response['time_duration'] = $timer->time_duration;
+        
+        return response()->json($response);
     }
 
     public function checkAnswer(Request $request) {
@@ -156,13 +188,26 @@ class TakeExamController extends Controller
                         ['user_id', '=', $user_id],
                         ['exam_id', '=', $exam_answer->exam_id],
                     ])
-                    ->select('exam_string', 'examinee_no')
+                    ->select('default_exam_string', 'examinee_no', 'exam_string')
                     ->first();
 
         $examinee_no = $exam->examinee_no;
-        $exam = json_decode($exam->exam_string);
-
         $score = 0;
+
+        // strict save point
+        $bool = DB::table('examinee_exams')
+                        ->where([
+                            ['user_id', '=', $user_id],
+                            ['exam_id', '=', $exam_answer->exam_id],
+                        ])
+                        ->select('timed_up')
+                        ->first();
+        
+        if ($bool->timed_up == true) {
+            $exam_answer = json_decode($exam->exam_string);
+        }
+        
+        $exam = json_decode($exam->default_exam_string);
 
         // Checking answer
         foreach($exam->exam_items as $i => $item) {
@@ -265,5 +310,48 @@ class TakeExamController extends Controller
         ];
 
         return $response;
+    }
+
+    
+    public function examSavePoint(Request $request) {
+
+        $timer = DB::table('examinee_exams')
+                    ->where([
+                        ['user_id', '=', $request->input('user_id')],
+                        ['exam_id', '=', $request->input('exam_id')]
+                    ])
+                    ->select(
+                        DB::raw("TIME_FORMAT('hh:ii:ss', TIMEDIFF(ADDTIME(time_start, SEC_TO_TIME(time_duration*60)), NOW())) AS `time`")
+                    )
+                    ->first();
+
+        if ($timer->time[0] == '-') {
+
+            DB::table('examinee_exams')
+                ->where([
+                    ['user_id', '=', $request->input('user_id')],
+                    ['exam_id', '=', $request->input('exam_id')]
+                ])
+                ->update([
+                    'timed_up' => true
+                ]);
+
+            return [
+                'time' => '00:00:00'
+            ];
+        }
+
+        DB::table('examinee_exams')
+            ->where([
+                ['user_id', '=', $request->input('user_id')],
+                ['exam_id', '=', $request->input('exam_id')]
+            ])
+            ->update([
+                'exam_string' => json_encode($request->input('exam'))
+            ]);
+
+        return [
+            'time' => $timer->time
+        ];
     }
 }

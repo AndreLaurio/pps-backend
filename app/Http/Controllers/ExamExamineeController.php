@@ -51,6 +51,33 @@ class ExamExamineeController extends Controller
                 ['exam_id', '=', $request->input('exam_id')]
             ])
             ->delete();
+
+        DB::table('examinee_exam_logs')
+            ->where([
+                ['user_id', '=', $request->input('user_id')],
+                ['exam_id', '=', $request->input('exam_id')]
+            ])
+            ->delete();
+
+        $session = DB::table('users')
+                        ->where([
+                            ['user_id', '=', $request->input('user_id')],
+                            ['session_exam_id', '=', $request->input('exam_id')]
+                        ])
+                        ->select(
+                            DB::raw('COUNT(*) as num')
+                        )
+                        ->first();
+
+        if ($session->num > 0) {
+            DB::table('users')
+                ->where('user_id', $request->input('user_id'))
+                ->update([
+                    'session_exam_id' => 0,
+                    'session_no_takes' => 0,
+                    'session_taken_on' => null
+                ]);
+        }
     }
 
     public function add(Request $request) {
@@ -70,7 +97,8 @@ class ExamExamineeController extends Controller
                     'user_id' => $request->input('user_id'),
                     'exam_id' => $request->input('exam_id'),
                     'examinee_no' => $request->input('user_id'),
-                    'exam_string' => ''
+                    'exam_string' => '',
+                    'default_exam_string' => ''
                 ]);
 
             $response = [
@@ -119,7 +147,8 @@ class ExamExamineeController extends Controller
                         'u.email',
                         'ee.overall_score',
                         'ee.total_score',
-                        'er.exam_remarks'
+                        'er.exam_remarks',
+                        'ee.exam_status_code'
                     )
                     ->orderByRaw('u.last_name ASC, u.first_name DESC')
                     ->get();
@@ -177,4 +206,5 @@ class ExamExamineeController extends Controller
 
         return $response;
     }
+    
 }
