@@ -24,4 +24,13 @@ class AccountController extends Controller
         $changeDetails->gender = $request->input('gender');
         $changeDetails->save();
     }
+    
+    public function changePhoto(Request $request) {
+
+        $user = User::find($request->input('user_id'));
+        $user->photo_src = time().'.'.$request->file('photo_img')->getClientOriginalExtension();
+        $request->file('photo_img')->move(public_path('../../pps-frontend/src/assets/storage/images/profiles/'), $user->photo_src);
+
+        $user->save();
+    }
 }
