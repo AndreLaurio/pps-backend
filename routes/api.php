@@ -26,6 +26,7 @@ Route::post('/exam/create', 'ExamController@create');
 
 Route::put('/changepw/{user_id}', 'AccountController@changePassword');
 Route::put('/changedetails/{user_id}', 'AccountController@changeDetails');
+Route::post('/changephoto/{user_id}', 'AccountController@changePhoto');
 
 Route::get('/exams', 'ExamController@getAll');
 Route::get('/exam/{exam_id}', 'ExamController@get');
