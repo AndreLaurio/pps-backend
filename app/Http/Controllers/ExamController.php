@@ -196,7 +196,7 @@ class ExamController extends Controller
 
         $exam->exam_items = DB::table('exam_items')
                                 ->where('exam_id', $exam->exam_id)
-                                ->get();
+                                ->paginate(1);
         
         foreach($exam->exam_items as $exam_item) {
 
