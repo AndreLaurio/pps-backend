@@ -36,7 +36,7 @@ class Exam extends Model
                                 DB::raw('DATE_FORMAT(updated_on, "%Y %b %d, %h:%i %p") AS updated_on_f'))
                     ->where('is_active', true)
                     // ->order_by('exam_title', 'ASC')
-                    ->paginate(5);
+                    ->paginate(1);
 
         return $query;
     }
