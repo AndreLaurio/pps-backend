@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Exam;
+use App\Examinee;
 
 class ExamExamineeController extends Controller
 {
@@ -80,6 +82,23 @@ class ExamExamineeController extends Controller
         }
     }
 
+    public function addCode(Request $request){
+        $user_id = $request->input('user_id');
+        $exam_code = $request->input('exam_code');
+
+        //find natin yung exam_id ng exam_code
+        $exam_id = Exam::where('exam_code',$exam_code)->value('exam_id');
+
+        //add the user to the table
+        $addExaminee = new Examinee();
+        $addExaminee->exam_id = $exam_id;
+        $addExaminee->examinee_no = $user_id;
+        $addExaminee->user_id = $user_id;
+        $addExaminee->exam_string = '';
+        $addExaminee->default_exam_string = '';
+        $addExaminee->save();
+
+    }
     public function add(Request $request) {
 
         $count_examinee = DB::table('examinee_exams')

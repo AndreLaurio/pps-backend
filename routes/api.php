@@ -44,6 +44,7 @@ Route::get('/exam/examinees/{exam_id}', 'ExamExamineeController@get');
 Route::get('/exam/examinees/not/{exam_id}', 'ExamExamineeController@getExamineesNotInExam');
 Route::post('/exam/examinee/delete', 'ExamExamineeController@delete');
 Route::post('/exam/examinee/add', 'ExamExamineeController@add');
+Route::post('/exam/examinee/code/add','ExamExamineeController@addCode');
 
 Route::post('/exam/results', 'ExamExamineeController@getResults');
 
@@ -56,6 +57,8 @@ Route::post('/exam/examinee/answer/view', 'ExamExamineeController@getExamineeAns
 
 Route::post('/exam/take/save_point', 'TakeExamController@examSavePoint');
 
+//messages
+Route::post('/messages', 'ChatController@sendMessage');
 // Change Tab
 Route::post('/exam/take/change-tab', 'TakeExamController@changeTab');
 Route::post('/exam/examinee/change-tab-history/get', 'ExamExamineeController@getChangeTabHistory');

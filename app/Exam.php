@@ -26,7 +26,8 @@ class Exam extends Model
 
         $query = DB::table('exams')
                     ->select(   'exam_id', 
-                                'exam_title', 
+                                'exam_title',
+                                'exam_code', 
                                 'exam_desc', 
                                 'time_duration', 
                                 'passing_score',
