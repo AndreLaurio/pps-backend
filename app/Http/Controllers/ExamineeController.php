@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Log;
 class ExamineeController extends Controller
 {
     public function getExams(Request $request) {
-        
+        DB::enableQueryLog();
         $exams = DB::table('examinee_exams AS ee')
                     ->join('exams AS e', 'ee.exam_id', '=', 'e.exam_id')
                     ->where('ee.user_id', $request->input('user_id'))
@@ -21,6 +21,7 @@ class ExamineeController extends Controller
                     )
                     ->get();
         Log::error(json_encode($request));
+        Log::error(DB::getQueryLog());
         return $exams;
     }
 }

@@ -139,6 +139,10 @@ class ExamExamineeController extends Controller
         $result = DB::table('examinee_exams AS ee')
                     ->join('users AS u', 'ee.user_id', '=', 'u.user_id')
                     ->join('exam_remarks AS er', 'ee.exam_remarks_code', '=', 'er.exam_remarks_code')
+                    ->leftJoin('examinee_change_tab_history AS ecth', [
+                        ['ee.user_id', '=', 'ecth.user_id'],
+                        ['ee.exam_id', '=', 'ecth.exam_id']
+                    ])
                     ->where('ee.exam_id', $request->input('exam_id'))
                     ->select(
                         'u.user_id',
@@ -148,8 +152,11 @@ class ExamExamineeController extends Controller
                         'ee.overall_score',
                         'ee.total_score',
                         'er.exam_remarks',
-                        'ee.exam_status_code'
+                        'ee.exam_status_code',
+                        DB::raw('COUNT(ecth.change_tab_date) AS change_tab_count'),
+                        'ee.exam_id'
                     )
+                    ->groupByRaw('ecth.user_id')
                     ->orderByRaw('u.last_name ASC, u.first_name DESC')
                     ->get();
         
@@ -205,6 +212,16 @@ class ExamExamineeController extends Controller
         ];
 
         return $response;
+    }
+
+    public function getChangeTabHistory(Request $request) {
+
+        return DB::table('examinee_change_tab_history')
+                ->where([
+                    ['user_id', '=', $request->input('user_id')],
+                    ['exam_id', '=', $request->input('exam_id')]
+                ])
+                ->get();
     }
     
 }

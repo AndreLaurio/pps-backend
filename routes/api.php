@@ -55,3 +55,7 @@ Route::post('/exam/edit', 'ExamController@edit');
 Route::post('/exam/examinee/answer/view', 'ExamExamineeController@getExamineeAnswer');
 
 Route::post('/exam/take/save_point', 'TakeExamController@examSavePoint');
+
+// Change Tab
+Route::post('/exam/take/change-tab', 'TakeExamController@changeTab');
+Route::post('/exam/examinee/change-tab-history/get', 'ExamExamineeController@getChangeTabHistory');

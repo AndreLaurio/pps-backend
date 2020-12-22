@@ -354,4 +354,13 @@ class TakeExamController extends Controller
             'time' => $timer->time
         ];
     }
+
+    public function changeTab(Request $request) {
+
+        DB::table('examinee_change_tab_history')
+            ->insert([
+                'user_id' => $request->input('user_id'),
+                'exam_id' => $request->input('exam_id')
+            ]);
+    }
 }
