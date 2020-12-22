@@ -74,6 +74,8 @@ class ExamController extends Controller
         $exam->is_active = $request->input('is_active');
         $exam->version = $request->input('version');
 
+        $exam->exam_code = $request->input('exam_code');
+
         $exam->save();
         $exam->exam_id = $exam->id;
 
