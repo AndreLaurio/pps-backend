@@ -135,7 +135,7 @@ class ExamExamineeController extends Controller
     }
 
     public function getResults(Request $request) {
-
+        DB::enableQueryLog();
         $result = DB::table('examinee_exams AS ee')
                     ->join('users AS u', 'ee.user_id', '=', 'u.user_id')
                     ->join('exam_remarks AS er', 'ee.exam_remarks_code', '=', 'er.exam_remarks_code')
@@ -160,7 +160,7 @@ class ExamExamineeController extends Controller
                     ->orderByRaw('u.last_name ASC, u.first_name DESC')
                     ->get();
         
-        
+        Log::error(DB::getQueryLog());
         return $result;
     }
 
