@@ -31,7 +31,10 @@ class ExamExamineeController extends Controller
 
     public function getExamineesNotInExam($exam_id) {
         $examinees = DB::table('users AS u')
-                        ->where('user_type_id', 2)
+                        ->where([
+                            ['user_type_id', 2],
+                            ['is_approved', 1]
+                        ])
                         ->select(
                             'u.user_id',
                             'u.last_name',
