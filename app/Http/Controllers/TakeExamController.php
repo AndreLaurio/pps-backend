@@ -272,6 +272,24 @@ class TakeExamController extends Controller
 
                 $exam->exam_items[$i]->answer = $ai->answer;
             }
+
+            // TOF
+            if ($item->question_type_code == 'TOF') {
+
+                if (!property_exists($ai, 'answer')) {
+                    $ai->answer = '';
+                }
+                
+                Log::error('tract');
+                Log::error($ai->answer);
+                Log::error($ai->tof_answer);
+
+                if ($ai->answer == $exam->exam_items[$i]->tof_answer) {
+                    $score++;
+                }
+
+                $exam->exam_items[$i]->answer = $ai->answer;
+            }
         }
 
         $exam_remarks_code = ($score >= $exam->passing_score) ? 'P' : 'F';

@@ -105,6 +105,10 @@ class ExamController extends Controller
                 $item->mcq_max_selection = $exam_item->mcq_max_selection;
             }
 
+            if ($item->question_type_code == 'TOF') {
+                $item->tof_answer = $exam_item->tof_answer;
+            }
+
             $item->save();
 
 
