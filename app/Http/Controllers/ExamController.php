@@ -187,7 +187,7 @@ class ExamController extends Controller
 
     public function getDesc($exam_id) {
 
-        $exam = DB::table('exams')
+        $exam = DB::table('exams AS ex')
             ->where('exam_id', $exam_id)
             ->first(); 
 

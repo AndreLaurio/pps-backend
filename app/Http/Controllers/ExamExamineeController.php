@@ -170,6 +170,8 @@ class ExamExamineeController extends Controller
                         'u.user_id',
                         'u.last_name',
                         'u.first_name',
+                        'u.middle_name',
+                        'u.extension_name',
                         'u.email',
                         'ee.overall_score',
                         'ee.total_score',
