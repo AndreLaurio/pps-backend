@@ -1,17 +1,15 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Seeder;
 
-class SeedItemTypesTable extends Migration
+class CoreItemTypesSeeder extends Seeder
 {
     /**
-     * Run the migrations.
+     * Run the database seeds.
      *
      * @return void
      */
-    public function up()
+    public function run()
     {
         $data = array(
             array(  'item_type_code' => 'QTN',
@@ -26,15 +24,5 @@ class SeedItemTypesTable extends Migration
         );
 
         DB::table('item_types')->insert($data);
-    }
-
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
-        //
     }
 }

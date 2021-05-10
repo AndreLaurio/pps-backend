@@ -1,17 +1,15 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Seeder;
 
-class SeedQuestionTypesTable extends Migration
+class CoreQuestionTypesSeeder extends Seeder
 {
     /**
-     * Run the migrations.
+     * Run the database seeds.
      *
      * @return void
      */
-    public function up()
+    public function run()
     {
         $data = array(
             array(  'question_type_code' => 'NNE',
@@ -29,15 +27,5 @@ class SeedQuestionTypesTable extends Migration
         );
 
         DB::table('question_types')->insert($data);
-    }
-
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
-        //
     }
 }

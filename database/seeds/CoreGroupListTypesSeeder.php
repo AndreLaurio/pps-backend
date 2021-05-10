@@ -1,17 +1,15 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Seeder;
 
-class SeedGroupListTypesTable extends Migration
+class CoreGroupListTypesSeeder extends Seeder
 {
     /**
-     * Run the migrations.
+     * Run the database seeds.
      *
      * @return void
      */
-    public function up()
+    public function run()
     {
         $data = array(
             array(  'group_list_type_code' => 'NMR',
@@ -26,15 +24,5 @@ class SeedGroupListTypesTable extends Migration
         );
 
         DB::table('group_list_types')->insert($data);
-    }
-
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
-        //
     }
 }
