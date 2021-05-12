@@ -62,3 +62,12 @@ Route::post('/messages', 'ChatController@sendMessage');
 // Change Tab
 Route::post('/exam/take/change-tab', 'TakeExamController@changeTab');
 Route::post('/exam/examinee/change-tab-history/get', 'ExamExamineeController@getChangeTabHistory');
+
+// Users
+Route::get('/users', 'UserController@index');
+Route::delete('/users/{user_id}', 'UserController@delete');
+Route::patch('/users/{user_id}', 'UserController@update');
+
+// Manage Exams
+Route::get('/exams/all', 'ExamController@index');
+Route::delete('/exams/{exam_id}', 'ExamController@delete2');

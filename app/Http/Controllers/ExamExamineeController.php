@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Exam;
 use App\Examinee;
+use Illuminate\Database\QueryException;
 
 class ExamExamineeController extends Controller
 {
@@ -30,22 +31,33 @@ class ExamExamineeController extends Controller
     }
 
     public function getExamineesNotInExam($exam_id) {
-        $examinees = DB::table('users AS u')
-                        ->where([
-                            ['user_type_id', 2],
-                            ['is_approved', 1]
-                        ])
-                        ->select(
-                            'u.user_id',
-                            'u.last_name',
-                            'u.first_name',
-                            'u.email'
-                        )
-                        ->groupByRaw('u.user_id')
-                        ->orderByRaw('u.last_name ASC, u.first_name ASC')
-                        ->get();
-        
-        return $examinees;
+        Log::debug($exam_id);
+        try {
+            $examinees = DB::table('users AS u')
+                            ->where([
+                                ['u.user_type_id', '=', 3],
+                                ['u.is_approved', '=', 1],
+                            ])
+                            ->whereRaw('(u.user_id NOT IN (
+                                SELECT ee.user_id 
+                                FROM examinee_exams AS ee
+                                WHERE ee.exam_id = "'. $exam_id .'"
+                            ))')
+                            ->select(
+                                'u.user_id',
+                                'u.last_name',
+                                'u.first_name',
+                                'u.email'
+                            )
+                            ->groupByRaw('u.user_id')
+                            ->orderByRaw('u.last_name ASC, u.first_name ASC')
+                            ->get();
+            Log::debug(json_encode($examinees));
+            return $examinees;
+        }
+        catch(QueryException $e) {
+            Log::debug($e);
+        }
     }
 
     public function delete(Request $request) {
@@ -159,8 +171,8 @@ class ExamExamineeController extends Controller
     public function getResults(Request $request) {
         DB::enableQueryLog();
         $result = DB::table('examinee_exams AS ee')
-                    ->join('users AS u', 'ee.user_id', '=', 'u.user_id')
-                    ->join('exam_remarks AS er', 'ee.exam_remarks_code', '=', 'er.exam_remarks_code')
+                    ->leftJoin('users AS u', 'ee.user_id', '=', 'u.user_id')
+                    ->leftJoin('exam_remarks AS er', 'ee.exam_remarks_code', '=', 'er.exam_remarks_code')
                     ->leftJoin('examinee_change_tab_history AS ecth', [
                         ['ee.user_id', '=', 'ecth.user_id'],
                         ['ee.exam_id', '=', 'ecth.exam_id']
@@ -180,11 +192,14 @@ class ExamExamineeController extends Controller
                         DB::raw('COUNT(ecth.change_tab_date) AS change_tab_count'),
                         'ee.exam_id'
                     )
-                    ->groupByRaw('ecth.user_id')
+                    ->groupByRaw('ee.user_id')
                     ->orderByRaw('u.last_name ASC, u.first_name DESC')
                     ->get();
         
         Log::error(DB::getQueryLog());
+        Log::debug('getResults');
+        Log::debug($request->input('exam_id'));
+        Log::debug(json_encode($result));
         return $result;
     }
 

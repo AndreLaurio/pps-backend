@@ -305,4 +305,78 @@ class ExamController extends Controller
         $exam_controller->addExamItems($exam_id, $request->input('exam_items'));
         $exam_controller->addExamGroups($exam_id, $request->input('exam_groups'));
     }
+
+    public function index(Request $request)
+    {
+        try {
+            $exams = DB::table('exams')
+                ->orderByRaw('exam_title ASC')
+                ->paginate(1000)
+                ->toArray();
+            Log::debug(json_encode($exams));
+            foreach($exams['data'] as $exam) {
+                $exam->examinees_count = DB::table('examinee_exams')
+                    ->where('exam_id', $exam->exam_id)
+                    ->selectRaw('COUNT(*) AS examinees_count')
+                    ->first()
+                    ->examinees_count;
+            }
+
+            return response()->json([
+                'code' => 200,
+                'exams' => $exams,
+                'message' => 'Getting exams is successful'
+            ]);
+        }
+        catch(QueryException $e) {
+            Log::debug($e);
+            return response()->json([], 500);
+        }
+    }
+
+    public function delete2(Request $request, $examId) {
+
+        try {
+
+            DB::beginTransaction();
+        
+            DB::table('examinee_exams')
+                ->where('exam_id', $examId)
+                ->delete();
+            
+            DB::table('examinee_exam_logs')
+                ->where('exam_id', $examId)
+                ->delete();
+    
+            DB::table('exam_groups')
+                ->where('exam_id', $examId)
+                ->delete();
+    
+            DB::table('exam_choices')
+                ->where('exam_id', $examId)
+                ->delete();
+            
+            DB::table('exam_items')
+                ->where('exam_id', $examId)
+                ->delete();
+    
+            DB::table('exams')  
+                ->where('exam_id', $examId)
+                ->delete();
+
+            DB::commit();
+
+            return response()->json([
+                'code' => 200,
+                'message' => 'Deleting exam is successful.'
+            ]);
+        }
+        catch(QueryException $e) {
+            DB::rollback();
+            Log::debug($e);
+            return response()->json([], 500);
+        }
+       
+    }
 }
+
