@@ -343,8 +343,12 @@ class ExamController extends Controller
             DB::table('examinee_exams')
                 ->where('exam_id', $examId)
                 ->delete();
-            
+               
             DB::table('examinee_exam_logs')
+                ->where('exam_id', $examId)
+                ->delete();
+            
+            DB::table('examinee_change_tab_history')
                 ->where('exam_id', $examId)
                 ->delete();
     
